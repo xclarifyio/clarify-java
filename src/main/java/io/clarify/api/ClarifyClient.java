@@ -3,9 +3,15 @@
  */
 package io.clarify.api;
 
-import java.util.Map;
+import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 import java.net.URI;
+
+import us.monoid.web.JSONResource;
+import us.monoid.web.Resty;
+
+
 
 /**
  * The starting point for the Clarify API Java SDK. The client offers two methods of interacting with the Clarify API:
@@ -15,143 +21,110 @@ import java.net.URI;
  * 2) A low-level API for directly interacting with the Clarify REST API directly. This provides only a thin wrapper around 
  * the actual HTTP request, but will perform the necessary steps for constructing properly-formed HTTP requests and
  * for sending credentials.
- * 
- * @author james
  *
- */
-public class ClarifyClient {
+ */ 
+public class ClarifyClient extends Resty {
     public static String CLARIFY_BASE_URI = "https://api.clarify.io";
     public static String DEFAULT_VERSION = "v1";
 
     public ClarifyClient(String appKey) {
-	this.appKey = appKey;
+        super();
+        this.appKey = appKey;
+        withHeader("Authorization","Bearer "+appKey);
+        withHeader("User-Agent","clarify-java-sdk-0.0.1");
     }
 
-    public Bundle createBundle(String name, URI mediaURI) {
-	// TODO: Implement call and parse response
-	Bundle bundle = new Bundle(this);
-	return bundle;
+    /**
+     * Creates a new Clarify Bundle using the Create Bundle REST API. This is a simple wrapper around
+     * the API for common bundle create needs and therefore only offers a limited number of the possible API parameters
+     *  
+     * @param name a string containing the name of the API bundle
+     * @param mediaURI a URI containing a valid URL where the media for this Bundle resides
+     * @return
+     * @throws IOException
+     */
+    public Bundle createBundle(String name, URI mediaURI) throws IOException {
+        JSONResource jsonResource = 
+                json(buildPathFromResource("/bundles"), form(data("name", name), data("media_url", mediaURI.toString())));
+        ClarifyResponse resp = new ClarifyResponse(jsonResource);
+        Bundle bundle = new Bundle(this, resp);
+        return bundle;
     }
 
-    public BundleList listBundles() {
-	// TODO: Implement call and parse response
-	BundleList list = null;
-	return list;
+    /**
+     * Retrieves the first page from the List Bundles REST API. The returned BundleList can then be used to 
+     * paginate through the results. Note that each call to bundleList.nextPage() will result in another API call
+     * over the network. 
+     * 
+     * @return a BundleList instance containing the first page of results
+     * @throws IOException
+     */
+    public BundleList listBundles() throws IOException {
+        JSONResource jsonResource = 
+                json(buildPathFromResource("/bundles"));
+        ClarifyResponse resp = new ClarifyResponse(jsonResource);
+        BundleList list = new BundleList(this, resp);
+        return list;
     }
 
     public BundleSearchResults searchBundles(String query) {
-	// TODO: Implement call and parse response
-	BundleSearchResults results = null;
-	return results;
+        // TODO: Implement call and parse response
+        BundleSearchResults results = null;
+        return results;
     }
 
-    public Bundle findBundle(String bundleId) {
-	// TODO: Implement call and parse response
-	Bundle bundle = new Bundle(this);
-	return bundle;
+    public Bundle findBundle(String bundleId) throws IOException {
+        if(bundleId == null) {
+            throw new RuntimeException("bundleId cannot be null");
+        }
+        
+        JSONResource jsonResource = 
+                json(buildPathFromResource("/bundles/"+bundleId));
+        ClarifyResponse resp = new ClarifyResponse(jsonResource);
+        Bundle bundle = new Bundle(this, resp);
+        return bundle;
     }
 
     public List<Track> listTracks(String bundleId) {
-	// TODO: Implement call and parse response
-	ArrayList list = new ArrayList<Track>();
-	return list;
+        // TODO: Implement call and parse response
+        ArrayList<Track> list = new ArrayList<Track>();
+        return list;
     }
 
     public void deleteTrack(String bundleId, int trackNum) {
-	// TODO: Implement call and parse response
+        // TODO: Implement call and parse response
     }
-
-
-    /**
-     * Perform a low-level GET request on the Clarify API. 
-     *
-     * Applies the authorization header with the provided application key and proper API version path
-     *
-     * @param path the resource path for the GET request (e.g. provide "bundles" if you want to GET /v1/bundles)
-     * @param params the key/value pairs for any GET parameters to include with the request
-     * @return ClarifyResponse containing the response status and the parsed JSON response code, where appropriate
-     */
-    public ClarifyResponse get(String path, Map<String,String> params) {
-	ClarifyResponse resp = new ClarifyResponse();
-
-	// TODO: Implement HTTP GET
- 
-	return resp;
-    }
-
-    /**
-     * Perform a low-level POST request on the Clarify API. 
-     *
-     * Applies the authorization header with the provided application key and proper API version path
-     *
-     * @param path the resource path for the POST request (e.g. provide "bundles" if you want to POST /v1/bundles)
-     * @param args the key/value pairs for any POST parameters to include with the request
-     * @return ClarifyResponse containing the response status and the parsed JSON response code, where appropriate
-     */
-    public ClarifyResponse post(String path, Map args) {
-	ClarifyResponse resp = new ClarifyResponse();
-
-	// TODO: Implement HTTP POST
- 
-	return resp;
-    }
-
-    /**
-     * Perform a low-level PUT request on the Clarify API. 
-     *
-     * Applies the authorization header with the provided application key and proper API version path
-     *
-     * @param path the resource path for the PUT request (e.g. provide "bundles/12345" if you want to PUT /v1/bundles/12345)
-     * @param args the key/value pairs for any PUT parameters to include with the request
-     * @return ClarifyResponse containing the response status and the parsed JSON response code, where appropriate
-     */
-    public ClarifyResponse put(String path, Map args) {
-	ClarifyResponse resp = new ClarifyResponse();
-
-	// TODO: Implement HTTP PUT
- 
-	return resp;
-    }
-
-    /**
-     * Perform a low-level DELETE request on the Clarify API. 
-     *
-     * Applies the authorization header with the provided application key and proper API version path
-     *
-     * @param path the resource path for the DELETE request (e.g. provide "bundles/12345" if you want to DELETE /v1/bundles/12345)
-     * @return ClarifyResponse containing the response status and the parsed JSON response code, where appropriate
-     */
-    public ClarifyResponse delete(String path) {
-	ClarifyResponse resp = new ClarifyResponse();
-
-	// TODO: Implement HTTP DELETE
-	
-	return resp;
-    }
- 
+    
     /**
      *
      *
      */
-    protected String buildPath(String path) {
-	return version()+path;
+    protected String buildPathFromHref(String href) {
+        return baseUri()+href;
     }
-
+    
     /**
      *
      *
+     */
+    protected String buildPathFromResource(String resourcePath) {
+        return baseUri()+"/"+version()+resourcePath;
+    }
+
+    /**
+     * Returns the base URI for the Clarify API
      */
     protected String baseUri() {
-	return ClarifyClient.CLARIFY_BASE_URI;
+        return CLARIFY_BASE_URI;
     }
 
     /**
-     *
-     *
+     * Returns the default API version
      */
     protected String version() {
-	return DEFAULT_VERSION;
+        return DEFAULT_VERSION;
     }
 
     private String appKey;
+    private Resty resty;
 }
