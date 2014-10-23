@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.net.URI;
 
+import us.monoid.json.JSONArray;
+import us.monoid.json.JSONObject;
 import us.monoid.web.JSONResource;
 import us.monoid.web.Resty;
 
@@ -45,7 +47,7 @@ public class ClarifyClient extends Resty {
      */
     public Bundle createBundle(String name, URI mediaURI) throws IOException {
         JSONResource jsonResource = 
-                json(buildPathFromResource("/bundles"), form(data("name", name), data("media_url", mediaURI.toString())));
+                json(buildPathFromResourcePath("/bundles"), form(data("name", name), data("media_url", mediaURI.toString())));
         ClarifyResponse resp = new ClarifyResponse(jsonResource);
         Bundle bundle = new Bundle(this, resp);
         return bundle;
@@ -61,25 +63,44 @@ public class ClarifyClient extends Resty {
      */
     public BundleList listBundles() throws IOException {
         JSONResource jsonResource = 
-                json(buildPathFromResource("/bundles"));
+                json(buildPathFromResourcePath("/bundles"));
         ClarifyResponse resp = new ClarifyResponse(jsonResource);
         BundleList list = new BundleList(this, resp);
         return list;
     }
 
-    public BundleSearchResults searchBundles(String query) {
-        // TODO: Implement call and parse response
-        BundleSearchResults results = null;
+    /**
+     * Searches through the bundles for the specific query string provided. The result can be used to examine
+     * the matched terms, locations within the media file where the terms reside, and paginate through the 
+     * results. 
+     * 
+     * @param query a raw string (automatically URL encoded) containing the query string to search for within the bundles
+     * @return a BundleSearchResults instance for examining the results and paginating through the search results
+     * @throws IOException on a non-success HTTP response containing the JSON payload with the message and any error details  
+     */
+    public BundleSearchResults searchBundles(String query) throws IOException {
+        JSONResource jsonResource = 
+                json(buildPathFromResourcePath("/search?query="+enc(query)));
+        ClarifyResponse resp = new ClarifyResponse(jsonResource);
+        BundleSearchResults results = new BundleSearchResults(this, resp);
         return results;
     }
 
+    /**
+     * Uses the Retrieve Bundle API to return a specific Bundle by the specific bundleId
+     * 
+     * @param bundleId a String containing the GUID of the Bundle to attempt to retrieve
+     * @return the Bundle retrieved by bundleId
+     * @throws IOException if a HTTP 400 error is returned due to a malformed GUID, or if a HTTP 404 not found is returned.
+     * The response will contain a JSON payload with a message and error details
+     */
     public Bundle findBundle(String bundleId) throws IOException {
         if(bundleId == null) {
             throw new RuntimeException("bundleId cannot be null");
         }
         
         JSONResource jsonResource = 
-                json(buildPathFromResource("/bundles/"+bundleId));
+                json(buildPathFromResourcePath("/bundles/"+bundleId));
         ClarifyResponse resp = new ClarifyResponse(jsonResource);
         Bundle bundle = new Bundle(this, resp);
         return bundle;
@@ -107,7 +128,7 @@ public class ClarifyClient extends Resty {
      *
      *
      */
-    protected String buildPathFromResource(String resourcePath) {
+    protected String buildPathFromResourcePath(String resourcePath) {
         return baseUri()+"/"+version()+resourcePath;
     }
 
@@ -127,4 +148,6 @@ public class ClarifyClient extends Resty {
 
     private String appKey;
     private Resty resty;
+    
+
 }
