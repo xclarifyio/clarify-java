@@ -5,6 +5,7 @@ package io.clarify.api;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.io.IOException;
 import java.net.URI;
 
@@ -106,14 +107,60 @@ public class ClarifyClient extends Resty {
         return bundle;
     }
 
+    public void deleteBundle(String bundleId) {
+        // TODO: Implement call and parse response
+        // TODO: Implement in Bundle.java
+    }
+
     public List<Track> listTracks(String bundleId) {
         // TODO: Implement call and parse response
         ArrayList<Track> list = new ArrayList<Track>();
         return list;
+
+        // TODO: Implement in Bundle.java
     }
 
+    public Track addTrackToBundle(String bundleId, URI trackUri) {
+        // TODO: Implement
+        
+        // TODO: Implement in Bundle.java
+        return null; 
+    }
+    
+    public Track findTrackForBundle(String bundleId, int trackNum) {
+        // TODO: Implement
+        
+        // TODO: Implement in Bundle.java
+        return null; 
+    }
+    
     public void deleteTrack(String bundleId, int trackNum) {
         // TODO: Implement call and parse response
+
+        // TODO: Implement in Bundle.java
+    }
+    
+    public Metadata findMetadata(String bundleId) {
+        // TODO: Implement
+        
+        // TODO: Implement in Bundle.java
+        return null; 
+        
+    }
+    
+    public Metadata updateMetadata(String bundleId, Map<String,String> map) {
+        // TODO: Implement
+        
+        // TODO: Implement in Bundle.java
+        return null; 
+        
+    }
+    
+    
+    public void resetMetadata(String bundleId) {
+        // TODO: Implement
+        
+        // TODO: Implement in Bundle.java
     }
     
     /**
@@ -149,5 +196,4 @@ public class ClarifyClient extends Resty {
     private String appKey;
     private Resty resty;
     
-
-}
+ }
