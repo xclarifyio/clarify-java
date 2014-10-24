@@ -12,8 +12,8 @@ While what follows is documentation on the Java library specifically, when in do
 
 * Java JDK-1.6 or higher
 * Apache Maven 3 or higher
-* Please refer http://maven.apache.org/guides/getting-started/maven-in-five-minutes.html for any help in Maven.
-* If you are using Eclipse, you can import the project by following these steps: http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html
+* Please refer to this handy [Maven in 5 Minutes guide](http://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) for any help using Maven
+* If you are using Eclipse, you can import the project by following these steps in the [M2Eclipse guide](http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html) 
 
 ## To build sdk:
 
@@ -147,11 +147,7 @@ public class App {
 String name = "Harvard Sentences";
 URI mediaUrl =  URI.create("http://media.clarify.io/audio/samples/harvard-sentences-1.wav");
 
-HashMap<String,String> args = new HashMap(); 
-// populate with additional name/value arguments for the API call
-// args.put("metadata","{}");
-
-Bundle bundle = client.createBundle(name, mediaUrl, args);
+Bundle bundle = client.createBundle(name, mediaUrl);
 System.out.println(bundle.id());
 ```
 
@@ -176,9 +172,7 @@ Metadata metadata = client.findMetadata(bundleId);
 ## Update the Metadata for a Bundle
 ```
 String bundleId = "abc1234";
-HashMap newValues = new HashMap();
-// fill newValues with the values we now wish the metadata to have…
-// ...
+String newDataInJson = "{...}";
 
 // Update the metadata in two API calls: 1) Retrieve the bundle with the bundle’s metadata, 2) call the update Metadata API
 HashMap<String,String> args = new HashMap(); 
@@ -187,15 +181,17 @@ Bundle bundle = client.findBundle(bundleId, args);
 
 if bundle != null { 
     BundleMetadata metadata = bundle.getMetadata();
-    metadata.update(newValues);
+    metadata.update(newDataInJson);
 }
 
 or
 
 BundleMetadata metadata = client.findMetadata(bundleId);
-metadata.update(newValues);
+metadata.update(newDataInJson);
+```
 
-Reset the Metadata (delete)
+## Reset the Metadata (delete)
+```
 String bundleId = "abc1234";
 Bundle bundle = client.findBundle(bundleId);
 if bundle != null { 
@@ -213,8 +209,6 @@ Bundle bundle = client.findBundle(bundleId);
 if(bundle != null) { 
     URI trackUrl =  URI.create("http://media.clarify.io/audio/samples/harvard-sentences-1.wav");
     Track track = bundle.addTrack(trackUrl);
-
-
 }
 
 List of Tracks for a bundle
@@ -223,7 +217,7 @@ String bundleId = "abc1234";
 // Note: makes two API calls
 Bundle bundle = client.findBundle(bundleId);
 if bundle != null { 
-    BundleTrackList tracks = bundle.listTracksForBundle();
+    BundleTrackList tracks = bundle.listTracks();
 }
 
 or
