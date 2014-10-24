@@ -321,7 +321,7 @@ public class ClarifyClient extends Resty {
     /**
      * Helper to concatenate the base URI of the Clarify API with a given HREF
      */
-    protected String buildPathFromHref(String href) {
+    public String buildPathFromHref(String href) {
         return baseUri()+href;
     }
     
@@ -329,7 +329,7 @@ public class ClarifyClient extends Resty {
      * Helper to concatenate the base URI of the Clarify API, the version, and a given resource path
      *
      */
-    protected String buildPathFromResourcePath(String resourcePath) {
+    public String buildPathFromResourcePath(String resourcePath) {
         return baseUri()+"/"+version()+resourcePath;
     }
 
