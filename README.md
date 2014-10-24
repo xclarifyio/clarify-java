@@ -47,7 +47,7 @@ public class App {
 
     // Create your first bundle using an example audio file
     String name = "Harvard Sentences";
-    URI mediaUrl =  URI.create(“https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-1.wav”);
+    URI mediaUrl =  URI.create("http://media.clarify.io/audio/samples/harvard-sentences-1.wav");
     Bundle bundle = client.createBundle(name, mediaUrl);
 
     System.out.println(bundle.id());
@@ -145,11 +145,11 @@ public class App {
 ```
 // Create your first bundle using an example audio file
 String name = "Harvard Sentences";
-URI mediaUrl =  URI.create(“https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-1.wav”);
+URI mediaUrl =  URI.create("http://media.clarify.io/audio/samples/harvard-sentences-1.wav");
 
 HashMap<String,String> args = new HashMap(); 
 // populate with additional name/value arguments for the API call
-// args.put(“metadata”,”{}”);
+// args.put("metadata","{}");
 
 Bundle bundle = client.createBundle(name, mediaUrl, args);
 System.out.println(bundle.id());
@@ -160,7 +160,7 @@ System.out.println(bundle.id());
 // Obtain the metadata in one API call by using the embed parameter
 String bundleId = "abc1234";
 HashMap<String,String> args = new HashMap(); 
-args.put(“embed”,”metadata”);
+args.put("embed","metadata");
 Bundle bundle = client.findBundle(bundleId, args);
 if bundle != null { 
     System.out.println(bundle.getMetadata());
@@ -182,7 +182,7 @@ HashMap newValues = new HashMap();
 
 // Update the metadata in two API calls: 1) Retrieve the bundle with the bundle’s metadata, 2) call the update Metadata API
 HashMap<String,String> args = new HashMap(); 
-args.put(“embed”,”metadata”);
+args.put("embed","metadata");
 Bundle bundle = client.findBundle(bundleId, args);
 
 if bundle != null { 
@@ -211,7 +211,7 @@ if bundle != null {
 String bundleId = "abc1234";
 Bundle bundle = client.findBundle(bundleId);
 if(bundle != null) { 
-    URI trackUrl =  URI.create(“https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-1.wav”);
+    URI trackUrl =  URI.create("http://media.clarify.io/audio/samples/harvard-sentences-1.wav");
     Track track = bundle.addTrack(trackUrl);
 
 
@@ -233,7 +233,7 @@ BundleTrackList tracks = client.listTracksForBundle(bundleId)
 
 Get a track
 String bundleId = "abc1234";
-String trackId = “wxyz9876”;
+String trackId = "wxyz9876";
 Bundle bundle = client.findBundle(bundleId);
 if bundle != null { 
    Track track = bundle.findTrack(trackId);
@@ -243,7 +243,7 @@ if bundle != null {
 ## Delete a track
 ```
 String bundleId = "abc1234";
-String trackId = “wxyz9876”;
+String trackId = "wxyz9876";
 
 // Note: makes two API calls
 Bundle bundle = client.findBundle(bundleId);
@@ -258,7 +258,7 @@ client.deleteTrack(bundleId, trackId)
 ```
 
 ## Direct-Access Client API
-Note: the direct-access client API uses the Resty API directly. See the Resty documentation (http://beders.github.io/Resty/Resty/Overview.html) and Javadoc (http://beders.github.io/Resty/Resty/API_Docs.html) for more details on how to use it. 
+Note: the direct-access client API uses the Resty API directly. See the [Resty documentation](http://beders.github.io/Resty/Resty/Overview.html) and [Javadoc](http://beders.github.io/Resty/Resty/API_Docs.html) for more details on how to use it. 
 
 Example:
 
