@@ -1,5 +1,5 @@
 package io.clarify.api;
-
+ 
 public class ClarifyModel {
     public ClarifyModel(ClarifyClient client, ClarifyResponse response) {
         this.client = client;

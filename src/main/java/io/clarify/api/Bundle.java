@@ -1,5 +1,7 @@
 package io.clarify.api;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,26 +23,73 @@ public class Bundle extends ClarifyModel {
         }
     }
     
-    public Metadata getMetadata() {
-        Metadata metadata = new Metadata(this.client);
-        // TODO: use the client to make another API call, unless it was embedded already
-        return metadata;
+    /**
+     * Deletes this bundle and all of its related Metadata and Tracks, along with media stored on Clarify systems. 
+     * Does not delete any media stored on remote systems.
+     * 
+     * USE CAUTION AS THIS CALL CANNOT BE UNDONE
+     * 
+     * @throws IOException if an error occurred during the delete bundle API call
+     */
+    public boolean delete() throws IOException {
+        return client.deleteBundle(getId());
+    }
+    
+    /**
+     * Adds a new Track to the Bundle with the given media URI
+     * @param uri the URI of the remote media file to add to the Bundle
+     * @return a new Track instance containing the details about the new Track
+     * @throws IOException if a failure occurred during the API,  
+     * typically a 4xx HTTP error code + JSON payload with the error message and details
+     */
+    public BundleTrack addTrack(URI uri) throws IOException {
+        return client.addTrackToBundle(getId(), uri);
     }
 
-    public Track addTrack() {
-        // TODO: Implement call and parse response
-        Track track = new Track();
-        return track;
+    /**
+     * Returns the list of Tracks associated to this media Bundle
+     * @return a BundleTrackList with the list of tracks and related details
+     * @throws IOException if a failure occurred during the API,  
+     * typically a 4xx HTTP error code + JSON payload with the error message and details
+     */
+    public BundleTrackList listTracks() throws IOException {
+        return client.listTracksForBundle(getId());
     }
 
-    public List<Track> listTracks() {
-        // TODO: Implement call and parse response
-        ArrayList<Track> list = new ArrayList<Track>();
-        return list;
+    /**
+     * Returns a specific Track by track number for this media Bundle
+     * @param trackId the GUID of the Track
+     * @return the requested Track (throws an IOException if a 404 NOT FOUND is returned)
+     * @throws IOException if a failure occurred during the API,  
+     * typically a 4xx HTTP error code + JSON payload with the error message and details
+     */
+    public BundleTrack findTrack(String trackId) throws IOException {
+        return client.findTrackForBundle(getId(), trackId);
     }
-
-    public void deleteTrack(int trackNum) {
-        // TODO: Implement call and parse response
+    
+    /**
+     * Deletes a track from this bundle.  This will only delete media stored on Clarify systems 
+     * and not delete the source media on remote systems.
+     * 
+     * USE CAUTION AS THIS CALL CANNOT BE UNDONE
+     * 
+     * @param trackId the GUID of the Track to delete
+     * @throws IOException if a failure occurred during the API,  
+     * typically a 4xx HTTP error code + JSON payload with the error message and details
+     */
+    public boolean deleteTrack(String trackId) throws IOException {
+        return client.deleteTrack(getId(), trackId);
+    }
+    
+    /**
+     * Returns this media Bundle's Metadata class, with details on the bundle and any 
+     * attached user data (if available)
+     * @return a Metadata instance for the media bundle
+     * @throws IOException if a failure occurred during the API,  
+     * typically a 4xx HTTP error code + JSON payload with the error message and details
+     */
+    public BundleMetadata getMetadata() throws IOException {
+        return client.findMetadata(getId());
     }
     
 }
