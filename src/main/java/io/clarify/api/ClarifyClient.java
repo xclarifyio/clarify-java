@@ -1,5 +1,7 @@
 package io.clarify.api;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -10,8 +12,10 @@ import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 import us.monoid.web.Content;
+import us.monoid.web.FormData;
 import us.monoid.web.JSONResource;
 import us.monoid.web.Resty;
+import us.monoid.web.mime.MultipartContent;
 
 
 
@@ -30,12 +34,13 @@ import us.monoid.web.Resty;
 public class ClarifyClient extends Resty {
     public static String CLARIFY_BASE_URI = "https://api.clarify.io";
     public static String DEFAULT_VERSION = "v1";
+    public static String SDK_VERSION = "0.0.1";
 
     public ClarifyClient(String appKey) {
         super();
         this.appKey = appKey;
         withHeader("Authorization","Bearer "+appKey);
-        withHeader("User-Agent","clarify-java-sdk-0.0.1");
+        withHeader("User-Agent","clarify-java-sdk-"+SDK_VERSION);
     }
 
     /**
@@ -48,11 +53,42 @@ public class ClarifyClient extends Resty {
      * @throws IOException
      */
     public Bundle createBundle(String name, URI mediaURI) throws IOException {
-        JSONResource jsonResource = 
-                json(buildPathFromResourcePath("/bundles"), form(data("name", name), data("media_url", mediaURI.toString())));
-        ClarifyResponse resp = new ClarifyResponse(jsonResource);
-        Bundle bundle = new Bundle(this, resp);
-        return bundle;
+        return createBundle(name, mediaURI, null);
+    } 
+
+    /**
+     * Creates a new Clarify Bundle using the Create Bundle REST API using a name, initial media URL, and any number of 
+     * additional fields (as defined by the Clarify Create Bundle API). 
+     *  
+     * @param name a string containing the name of the API bundle
+     * @param mediaURI a URI containing a valid URL where the media for this Bundle resides
+     * @param fields a Map of key-value String pairs with any additional parameter values. This value may be null or empty if no additional 
+     * parameters are desired
+     * @return the newly created Bundle instance
+     * @throws IOException on a non-success HTTP response containing the JSON payload with the message and any error details  
+     */
+    public Bundle createBundle(String name, URI mediaURI, Map<String,String> fields) throws IOException {
+        if(name == null) { throw new RuntimeException("name cannot be null"); }
+        if(fields == null) {
+            // create a new, empty map
+            fields = new HashMap<String,String>();
+        }
+        // load the name and mediaURI into the map (overwriting these two keys that may already be assigned) 
+        fields.put("name",name);
+        if(mediaURI != null) { fields.put("media_url", mediaURI.toString()); }
+        
+        String params = urlEncodeMap(fields);
+        Content content = new Content("application/x-www-form-urlencoded", params.getBytes());
+        JSONResource jsonResource =  
+                json(buildPathFromResourcePath("/bundles"), content);
+        
+        String bundleId;
+        try {
+            bundleId = (String)jsonResource.get("id");
+            return findBundle(bundleId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -61,7 +97,7 @@ public class ClarifyClient extends Resty {
      * over the network. 
      * 
      * @return a BundleList instance containing the first page of results
-     * @throws IOException
+     * @throws IOException on a non-success HTTP response containing the JSON payload with the message and any error details  
      */
     public BundleList listBundles() throws IOException {
         JSONResource jsonResource = 
@@ -72,7 +108,7 @@ public class ClarifyClient extends Resty {
     }
 
     /**
-     * Searches through the bundles for the specific query string provided. The result can be used to examine
+     * Performs a wildcard search for the specific query string provided. The result can be used to examine
      * the matched terms, locations within the media file where the terms reside, and paginate through the 
      * results. 
      * 
@@ -81,12 +117,37 @@ public class ClarifyClient extends Resty {
      * @throws IOException on a non-success HTTP response containing the JSON payload with the message and any error details  
      */
     public BundleSearchResults searchBundles(String query) throws IOException {
+        return searchBundles(query, null);
+    }
+    
+    /**
+     * Performs an advanced search for the specific query string provided using the additional search query parameters provided. 
+     * See the Search Bundles API documentation for the various fields, filters, and other parameters available. 
+     * 
+     * The result can be used to examine the matched terms, locations within the media file where the terms reside, and paginate through the 
+     * results. 
+     * 
+     * @param query a raw string (automatically URL encoded) containing the query string to search for within the bundles
+     * @param params a Map of key-value String pairs to pass to the search API. May be nill or empty if no additional parameters are to be provided
+     * @return a BundleSearchResults instance for examining the results and paginating through the search results
+     * @throws IOException on a non-success HTTP response containing the JSON payload with the message and any error details  
+     */
+    public BundleSearchResults searchBundles(String query, Map<String,String> params) throws IOException {
+        if(query == null) { throw new RuntimeException("query cannot be null"); }
+        if(params == null) {
+            // create a new, empty map
+            params = new HashMap<String,String>();
+        }
+        // load the name and mediaURI into the map (overwriting these two keys that may already be assigned) 
+        params.put("query",enc(query));
+        String urlParams = urlEncodeMap(params);
         JSONResource jsonResource = 
-                json(buildPathFromResourcePath("/search?query="+enc(query)));
+                json(buildPathFromResourcePath("/search?"+urlParams));
         ClarifyResponse resp = new ClarifyResponse(jsonResource);
         BundleSearchResults results = new BundleSearchResults(this, resp);
         return results;
     }
+    
 
     /**
      * Uses the Retrieve Bundle API to return a specific Bundle by the specific relative href path
@@ -126,6 +187,27 @@ public class ClarifyClient extends Resty {
         ClarifyResponse resp = new ClarifyResponse(jsonResource);
         Bundle bundle = new Bundle(this, resp);
         return bundle;
+    }
+    
+    /**
+     * Updates an existing Bundle's properties, incrementing the Bundle version number on success. 
+     * 
+     * @param bundleId a String containing the GUID of the Bundle to attempt to update
+     * @param fields A Map of key-value String pairs with the fields to update (see the API docs for field names allowed to be updated)
+     * @return true if the update succeeded, otherwise an IOException will be thrown with the error received
+     * @throws IOException if a HTTP 400 error is returned due to a malformed GUID, or if a HTTP 404 not found is returned.
+     * The response will contain a JSON payload with a message and error details
+     */
+   public boolean updateBundle(String bundleId, Map<String,String> fields) throws IOException {
+        if(bundleId == null) { throw new RuntimeException("bundleId cannot be null"); }
+        if(fields == null) { throw new RuntimeException("fields cannot be null"); }
+        if(fields.size() == 0) { throw new RuntimeException("fields cannot be empty"); }
+        
+        String params = urlEncodeMap(fields);
+        Content content = new Content("application/x-www-form-urlencoded", params.getBytes());
+        String url = buildPathFromResourcePath("/bundles/"+bundleId);
+        json(url, put(content));
+        return true;
     }
     
     /**
@@ -333,6 +415,36 @@ public class ClarifyClient extends Resty {
         return baseUri()+"/"+version()+resourcePath;
     }
 
+    /*
+     * Helper to build the URL encoding for a flat Map of name/value String pairs. 
+     * The values are URL encoded in the process 
+     * 
+     * Example:
+     * 
+     * Given a map such as the following:
+     * 
+     * "a"->"b"
+     * "c"->"d"
+     * 
+     * The result will be:
+     * 
+     * a=b&c=d
+     * 
+     */
+    public String urlEncodeMap(Map<String,String> fields) {
+        StringBuffer params = new StringBuffer();
+        Iterator<String> keys = fields.keySet().iterator();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            String value = fields.get(key);
+            if(params.length() > 0) {
+                params.append("&");
+            }
+            params.append(key+"="+Resty.enc(value));
+        }
+        return params.toString();
+    }
+    
     /**
      * Returns the base URI for the Clarify API
      */
