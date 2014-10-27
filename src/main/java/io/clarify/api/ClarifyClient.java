@@ -40,7 +40,8 @@ public class ClarifyClient extends Resty {
         super();
         this.appKey = appKey;
         withHeader("Authorization","Bearer "+appKey);
-        withHeader("User-Agent","clarify-java-sdk-"+SDK_VERSION);
+        //withHeader("User-Agent","clarify-java/"+SDK_VERSION+"/"+System.getProperty("java.version"));
+        userAgent = "clarify-java/"+SDK_VERSION+"/"+System.getProperty("java.version");
     }
 
     /**
