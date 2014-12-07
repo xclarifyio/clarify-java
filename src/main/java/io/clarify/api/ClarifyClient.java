@@ -34,7 +34,7 @@ import us.monoid.web.mime.MultipartContent;
 public class ClarifyClient extends Resty {
     public static String CLARIFY_BASE_URI = "https://api.clarify.io";
     public static String DEFAULT_VERSION = "v1";
-    public static String SDK_VERSION = "0.0.1";
+    public static String SDK_VERSION = "1.0.0";
 
     public ClarifyClient(String appKey) {
         super();
