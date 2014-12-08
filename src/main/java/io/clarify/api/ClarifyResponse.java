@@ -66,7 +66,8 @@ public class ClarifyResponse {
      * and return it. The Resty Java API returns an Object type, so you will need to determine the proper
      * type for casting. Note that it is usually a JSONObject when there is a complex JSON structure, a 
      * String, or a primitive JSON type.
-     *  
+     * 
+     * @param path is the entire URL path
      * @return The result of the JSON path, usually a Resty us.monoid.json.JSONObject, a String, or a primitive value
      */
     public Object getJSONValue(String path) {

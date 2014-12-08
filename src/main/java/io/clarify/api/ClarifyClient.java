@@ -51,7 +51,7 @@ public class ClarifyClient extends Resty {
      * @param name a string containing the name of the API bundle
      * @param mediaURI a URI containing a valid URL where the media for this Bundle resides
      * @return
-     * @throws IOException
+     * @throws IOException if the bundle fails creation
      */
     public Bundle createBundle(String name, URI mediaURI) throws IOException {
         return createBundle(name, mediaURI, null);
@@ -216,7 +216,8 @@ public class ClarifyClient extends Resty {
      * Does not delete any media stored on remote systems.
      * 
      * USE CAUTION AS THIS CALL CANNOT BE UNDONE
-     * 
+     * @param bundleId
+     * @return true
      * @throws IOException if an error occurred during the delete bundle API call
      */
     public boolean deleteBundle(String bundleId) throws IOException {
@@ -251,7 +252,7 @@ public class ClarifyClient extends Resty {
     /**
      * Adds a new Track to the Bundle with the given media URI, then fetches the resulting resource (resulting in 2 API calls)
      * @param bundleId the GUID of the Bundle to add the Track to
-     * @param uri the URI of the remote media file to add to the Bundle
+     * @param trackUri the URI of the remote media file to add to the Bundle
      * @return a new Track instance containing the details about the new Track
      * @throws IOException if a failure occurred during the API,  
      * typically a 4xx HTTP error code + JSON payload with the error message and details
@@ -320,6 +321,7 @@ public class ClarifyClient extends Resty {
      * 
      * @param bundleId the GUID of the Bundle to delete the specific trackNum for
      * @param trackId the GUID of the Track to delete
+     * @return true
      * @throws IOException if a failure occurred during the API,  
      * typically a 4xx HTTP error code + JSON payload with the error message and details
      */
