@@ -28,7 +28,7 @@ import us.monoid.web.mime.MultipartContent;
  * the actual HTTP request, but will perform the necessary steps for constructing properly-formed HTTP requests and
  * for sending credentials. The low-level API uses Resty, a lightweight wrapper for making HTTP API calls and 
  * processing the response payload using CSS-style JSON selectors. More details are available at 
- * <a href="http://beders.github.io/Resty/Resty/Overview.html">the Resty Overview page</>
+ * <a href="http://beders.github.io/Resty/Resty/Overview.html">the Resty Overview page</a>
  *
  */ 
 public class ClarifyClient extends Resty {
@@ -403,6 +403,8 @@ public class ClarifyClient extends Resty {
     
     /**
      * Helper to concatenate the base URI of the Clarify API with a given HREF
+     * @param href the full path to the resource 
+     * @return string of the full request URL
      */
     public String buildPathFromHref(String href) {
         return baseUri()+href;
@@ -410,7 +412,8 @@ public class ClarifyClient extends Resty {
     
     /**
      * Helper to concatenate the base URI of the Clarify API, the version, and a given resource path
-     *
+     * @param resourcePath the full path to the resource
+     * @return string of the full request url
      */
     public String buildPathFromResourcePath(String resourcePath) {
         return baseUri()+"/"+version()+resourcePath;
@@ -448,6 +451,7 @@ public class ClarifyClient extends Resty {
     
     /**
      * Returns the base URI for the Clarify API
+     * @return the root of the API
      */
     protected String baseUri() {
         return CLARIFY_BASE_URI;
@@ -455,6 +459,7 @@ public class ClarifyClient extends Resty {
 
     /**
      * Returns the default API version
+     * @return version of the API
      */
     protected String version() {
         return DEFAULT_VERSION;
