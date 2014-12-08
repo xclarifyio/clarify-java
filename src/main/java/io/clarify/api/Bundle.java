@@ -28,7 +28,7 @@ public class Bundle extends ClarifyModel {
      * Does not delete any media stored on remote systems.
      * 
      * USE CAUTION AS THIS CALL CANNOT BE UNDONE
-     * 
+     * @return boolean
      * @throws IOException if an error occurred during the delete bundle API call
      */
     public boolean delete() throws IOException {
@@ -74,6 +74,7 @@ public class Bundle extends ClarifyModel {
      * USE CAUTION AS THIS CALL CANNOT BE UNDONE
      * 
      * @param trackId the GUID of the Track to delete
+     * @return boolean
      * @throws IOException if a failure occurred during the API,  
      * typically a 4xx HTTP error code + JSON payload with the error message and details
      */
