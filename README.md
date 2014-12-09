@@ -31,6 +31,8 @@ Add dependency to sdk in your application's pom.xml as below.
 </dependency>
 ```
 
+If you're trying to launch your own library into the Maven Central Repository, check out [these instructions](http://datumedge.blogspot.com/2012/05/publishing-from-github-to-maven-central.html).
+
 ## Testing your configuration
 
 

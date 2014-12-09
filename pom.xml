@@ -126,4 +126,8 @@
 			</build>
 		</profile>
 	</profiles>
+	<organization>
+		<name>Clarify Inc</name>
+		<url>http://Clarify.io</url>
+	</organization>
 </project>
