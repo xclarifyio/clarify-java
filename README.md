@@ -4,6 +4,10 @@ The clarify-java library allows you to use the Clarify API from within Java. It 
 
 The library itself is MIT-licensed so if you find anything which is incomplete, unclear, or even wrong, feel free to contribute to the Github project and make the community better.
 
+You can get started in minutes using our Quickstarts:
+
+[http://clarify.io/docs/quickstarts/](http://clarify.io/docs/quickstarts/)
+
 ## More Information
 
 While what follows is documentation on the Java library specifically, when in doubt, check out our API documentation at https://developer.clarify.io
