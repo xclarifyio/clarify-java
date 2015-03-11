@@ -3,7 +3,7 @@
 
     <groupId>io.clarify.api</groupId>
     <artifactId>clarify-api-sdk</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Clarify API SDK</name>
