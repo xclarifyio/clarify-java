@@ -3,7 +3,7 @@
 
     <groupId>io.clarify.api</groupId>
     <artifactId>clarify-api-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Clarify API SDK</name>
@@ -44,7 +44,7 @@
         </developer>
         <developer>
             <name>Keith Casey</name>
-            <email>keith@clarify.io</email>
+            <email>support@clarify.io</email>
             <organization>Clarify Inc</organization>
             <organizationUrl>http://clarify.io</organizationUrl>
         </developer>
@@ -54,8 +54,8 @@
         <connection>scm:git:git@github.com:Clarify/clarify-java.git</connection>
         <developerConnection>scm:git:git@github.com:Clarify/clarify-java.git</developerConnection>
         <url>git@github.com:Clarify/clarify-java.git</url>
-      <tag>clarify-api-sdk-1.0.0</tag>
-  </scm>
+        <tag>clarify-api-sdk-1.0.0</tag>
+    </scm>
 
 	<build>
 		<plugins>
